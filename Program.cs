@@ -16,7 +16,7 @@ namespace Skola
             while (MenuActive == true)
             {
                 Console.WriteLine("School Menu:\n1. Teacher and Department\n2. " +
-                "StudentInfo\n3. Active Courses\n4. Exit");
+                "StudentInfo\n3. Active Courses\n4. StudentCourses\n5. Exit");
                 string MenuChoice = Console.ReadLine();
 
 
@@ -33,9 +33,10 @@ namespace Skola
                         ActiveCourses(Context);
                         break;
                     case "4":
-                        MenuActive = false;
+                        StudentsCourses(Context);
                         break;
                     case "5":
+                        MenuActive = false; 
                         break;
                     default:
                         Console.WriteLine("Choose between 1-4");
@@ -70,8 +71,8 @@ namespace Skola
 
                 foreach (var item in Cou)
                 {
-
-                    Console.WriteLine($"ID: {item.Id} Course: {item.Class1}\n");
+                    // Showing Active courses
+                    Console.WriteLine($"ID: {item.Id} Course: {item.Class1} ({((bool)item.Active ? "Active" : "Inactive")})");
                 }
                 Console.ReadKey();
                 Console.Clear();
@@ -104,14 +105,33 @@ namespace Skola
                 Console.ReadKey();
                 Console.Clear();
 
+            }
 
+            static void StudentsCourses(HighSchoolDbContext Context)
+            {
+                Console.Clear();
 
-                //var update = Context.Classes.Where(u => u.Id == 3).FirstOrDefault();
+                var stu = Context.Students;
 
-                //update.Active = true;
-                //Context.SaveChanges();
+                for (int i = 1; i <= stu.Count(); i++)
+                {
+                    // Many to many Linq to find all courses that each student participates in
+                    var student = Context.Students
+                    .Include(s => s.StudentClasses)
+                    .ThenInclude(c => c.Class)
+                    .Where(s => s.Id == i)
+                    .FirstOrDefault();
 
+                    Console.WriteLine($"Courses taken by the student: {student.Fname} {student.Lname}");
+                    foreach (var item in student.StudentClasses)
+                    {
+                        Console.WriteLine($"{item.Class.Class1}");
+                    }
 
+                    Console.WriteLine();
+                }
+
+                Console.ReadKey();
 
             }
 
