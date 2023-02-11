@@ -16,7 +16,7 @@ namespace Skola
             while (MenuActive == true)
             {
                 Console.WriteLine("School Menu:\n1. Teacher and Department\n2. " +
-                "StudentInfo\n3. Active Courses\n4. StudentCourses\n5. Exit");
+                "StudentCourses\n3. Active Courses\n4. Exit");
                 string MenuChoice = Console.ReadLine();
 
 
@@ -27,16 +27,13 @@ namespace Skola
                         TeacherDepartments(Context);
                         break;
                     case "2":
-                        StudentInfo(Context);
+                        StudentsCourses(Context);
                         break;
                     case "3":
                         ActiveCourses(Context);
                         break;
                     case "4":
-                        StudentsCourses(Context);
-                        break;
-                    case "5":
-                        MenuActive = false; 
+                        MenuActive = false;
                         break;
                     default:
                         Console.WriteLine("Choose between 1-4");
@@ -49,7 +46,7 @@ namespace Skola
               {
                 Console.Clear();
 
-                var stu = Context.Students.OrderBy(s => s.Id);
+                var stu = Context.Students.OrderBy(y => y.Id);
 
                 foreach (var item in stu)
                 {
@@ -67,7 +64,7 @@ namespace Skola
                 Console.Clear();
 
                 // All Active Courses
-                var Cou = Context.Classes.Where(s => s.Active == true);
+                var Cou = Context.Classes.Where(x => x.Active == true);
 
                 foreach (var item in Cou)
                 {
@@ -89,7 +86,8 @@ namespace Skola
                 for (int i = 1; i <= staff.Count(); i++)
                 {
 
-                    var staffRole = Context.staff.Where(s => s.Id == i)
+                    var staffRole = Context.staff
+                        .Where(s => s.Id == i)
                         .Select(s => s.Role).FirstOrDefault();
 
                     // if the Employee has the StaffID required they will match
@@ -118,11 +116,11 @@ namespace Skola
                     // Many to many Linq to find all courses that each student participates in
                     var student = Context.Students
                     .Include(s => s.StudentClasses)
-                    .ThenInclude(c => c.Class)
+                    .ThenInclude(sc => sc.Class)
                     .Where(s => s.Id == i)
                     .FirstOrDefault();
 
-                    Console.WriteLine($"Courses taken by the student: {student.Fname} {student.Lname}");
+                    Console.WriteLine($"Student ID: {student.Id} {student.Fname} {student.Lname}");
                     foreach (var item in student.StudentClasses)
                     {
                         Console.WriteLine($"{item.Class.Class1}");
@@ -132,6 +130,7 @@ namespace Skola
                 }
 
                 Console.ReadKey();
+                Console.Clear();
 
             }
 
